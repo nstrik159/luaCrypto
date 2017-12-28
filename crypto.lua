@@ -6,7 +6,7 @@ function euclidean_algorithm(num1,num2)
 	return num1
 end
 
---gcd=euclidean_algorithm
+gcd=euclidean_algorithm
 
 function least_common_multiple(a,b)
 	local min= math.min(a,b) --(a > b) and b or a; -- a > b ? b : a
@@ -14,29 +14,81 @@ function least_common_multiple(a,b)
 	return (max / gcd(min,max)) * min
 end
 
---lcm=least_common_multiple
+lcm=least_common_multiple
 
-function prime_numbers_in_range(p)
-	local tab={}
-	
+function modular_extended_euclidean_algorithm(a,b)
+	local min=math.min(a,b)
+	local max=math.max(a,b)
+	local function inner_extended_euclidean_algorithm(c,d,e,f)
+		local coefficient=math.floor(d/c)
+		if e==nil or f==nil then
+			e=0;
+			f=1;
+		end
+		if d%c~=0 and (( e - (f * coefficient) ) % max)~=0 then
+			print("Original: "..tostring(d)..
+						" = "..tostring(coefficient)..
+						"("..tostring(c)..") + "..
+						tostring(d%c)
+						)
+			print("2 Answers Ago:	"..tostring(e))
+			print("1 Answer Ago:	"..tostring(f))
+			print("Coefficient: floor("..tostring(d)..
+																"/"..tostring(c)..
+																") = "..tostring(coefficient)
+						)
+			print("Original Max Number: "..tostring(max))
+			print("Inverse: "..tostring(e)..
+							" - "..tostring(f)..
+							"("..tostring(coefficient)..") mod "..tostring(max)..
+							" = "..tostring(e-(f*coefficient))..
+							" mod "..tostring(max).." = "..tostring(( e - (f * coefficient) ) % max).."\n"
+						)
+			return inner_extended_euclidean_algorithm(d%c,c,f,( e - (f * coefficient) ) % max)
+		else	
+			return f
+		end
+	end
+	return inner_extended_euclidean_algorithm(min,max)
 end
+
+emodgcd=modular_extended_euclidean_algorithm
 
 function extended_euclidean_algorithm(a,b)
-    local min=math.min(a,b)
-    local max=math.max(a,b)
-    local q={}
-    local p={0,1}
-    local function euclidean_algorithm_generate_q(c,d)
-      table.insert(q,math.floor(d/c))--Where d > c
-      --print(tostring(math.max(c,d)).." = "..tostring(math.floor(math.max(c,d)/math.min(c,d))).."("..tostring(math.min(c,d))..") + "..tostring(d%c))
-      if d%c~=0 then
-        euclidean_algorithm_generate_q(d%c,c)
-      end
-    end
-    euclidean_algorithm_generate_q(min,max)
-    for i=1,#q-1 do
-      table.insert(p,( p[i] - (p[i+1] * q[i]) ) % max )
-      print(tostring(p[i]).." - "..tostring(p[i+1]).."("..tostring(q[i])..") mod "..tostring(max).." = "..tostring(p[i]-(p[i+1]*q[i])).." mod "..tostring(max).." = "..tostring(p[i+2]))
-    end
+	local min=math.min(a,b)
+	local max=math.max(a,b)
+	local function inner_extended_euclidean_algorithm(c,d,e,f)
+		local coefficient=math.floor(d/c)
+		if e==nil or f==nil then
+			e=0;
+			f=1;
+		end
+		if d%c~=0 and ( e - (f * coefficient) )~=0 then
+			print("Original: "..tostring(d)..
+						" = "..tostring(coefficient)..
+						"("..tostring(c)..") + "..
+						tostring(d%c)
+						)
+			print("2 Answers Ago:	"..tostring(e))
+			print("1 Answer Ago:	"..tostring(f))
+			print("Coefficient: floor("..tostring(d)..
+																"/"..tostring(c)..
+																") = "..tostring(coefficient)
+						)
+			print("Inverse: "..tostring(e)..
+							" - "..tostring(f)..
+							"("..tostring(coefficient)..")"..
+							" = "..tostring(e-(f*coefficient)).."\n"
+						)
+			return inner_extended_euclidean_algorithm(d%c,c,f,( e - (f * coefficient) ))
+		else	
+			return f
+		end
+	end
+	return inner_extended_euclidean_algorithm(min,max)
 end
-extended_euclidean_algorithm(26,15)
+
+egcd=extended_euclidean_algorithm
+
+print("Modular Inverse Euclidean Algorithm answer: "..tostring(emodgcd(26,15)))
+print("Inverse Euclidean Algorithm answer: "..tostring(egcd(26,15)))
